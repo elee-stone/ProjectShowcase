@@ -10,9 +10,9 @@ Create an application that can be accessed via a user’s browser that creates a
 Helper.R: <br />
 Use odbcConnect to initiate connection to internal database. The stringr package is a set of wrappers to help embed SQL within the R syntax. The objective is to extract various returns and key identifiers to drive downstream analytics. <br />
 Data cleaning and manipulation techniques are used with a combination of arguments from the data.table and dplr libraries, while the pipe (%>%) used is from the magrittr package. A helpful way to read the pipe operator is to read it as “and then”. So, for example, <br />
-'''
+```
 mutate(return_code = as.character(return_code)) %>% bind_rows(FundQuery) 
-'''
+```
 can be translated as, create a character vector called return_code “and then” append the vector (row-wise) to the existing object FundQuery. <br />
 <br />
 Make_blend is a function that combines all respective Mutual Funds. A weakness of the function is that it requires all funds to have the same amount of history. Example: If all funds have 15-year returns, except for one, then the blended portfolio will not be built. <br />
