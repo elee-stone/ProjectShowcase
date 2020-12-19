@@ -7,7 +7,7 @@
 #    http://shiny.rstudio.com/
 #
 
-source("Helper.R")
+source("helpers.R")
 
 list.of.packages <- c("shiny", "xlsx", "extrafont", "assertthat", "gridExtra", "officer", "DT", "qdap")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
@@ -121,7 +121,7 @@ server <- function(input, output) {
            value.name = "weight", 
            variable.factor = F) %>% 
       merge(., returns[ , .(abbreviation, date, time_period, return_type, return)], by = "abbreviation", allow.cartesian = T) %>% 
-      .[time_period != "1m_c"] %>% 
+      .[time_period != "1m"] %>% 
       .[weight != 0] %>% 
       .[ , weighted_return := weight * return] %>% 
       # .[ , base_weighted := base * return] %>% 
@@ -188,7 +188,7 @@ server <- function(input, output) {
         setkey(abbreviation, date)
       
       fund_at <- returns[abbreviation %in% funds] %>% 
-        .[time_period != "1m_c"] %>% 
+        .[time_period != "1m"] %>% 
         .[ , .(abbreviation, date, metric = return_type, value = return, time_period)] %>% 
         .[ , time_period := stringr::str_extract(time_period,"[0-9]+")] %>% 
         .[ , time_period := factor(time_period, levels = c("1", "3", "5","7", "10"))] 
