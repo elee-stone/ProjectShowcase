@@ -7,7 +7,7 @@
 #    http://shiny.rstudio.com/
 #
 
-source("helpers.R")
+source("Helper.R")
 
 list.of.packages <- c("shiny", "xlsx", "extrafont", "assertthat", "gridExtra", "officer", "DT", "qdap")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
