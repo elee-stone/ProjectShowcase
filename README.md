@@ -1,6 +1,6 @@
 # ProjectShowcase
 This repository is for Showcasing purposes only. Embedded SQL is not intended to pull from a sample dataset or other database. 
-Repo consists of two files: Helper.R and app.R.
+Repo consists of two files: Helper.R and app.R. <br />
 Helper.R is the feeder file needed to run app.R, a reactive Shiny dashboard to designed pull certain Mutual Fund statistics upon the users request.
 Objective:
 Create an application that can be accessed via a user’s browser that creates a blended portfolio of user-specified Mutual Funds and calculates various aggregated metrics.
