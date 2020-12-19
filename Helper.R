@@ -8,22 +8,22 @@ library(tidyverse)
 
 con<- odbcConnect("DB")
 
-FundnQuery  <- stringr::str_c(
+FundQuery  <- stringr::str_c(
   'select
-  f.short_name
+  f.fundName
   ,fe.wsj_symbol as abbreviation
   ,r.profile_date as PROFILE_DATE 
   ,r.return_code
-  ,r.ror_1m_c_noload
-  ,r.ror_1y_c_noload
-  ,r.ror_3y_a_noload
-  ,r.ror_5y_a_noload
-  ,r.ror_7y_a_noload
-  ,r.ror_10y_a_noload
-  ,r.ror_15y_a_noload
+  ,r.1mReturn
+  ,r.1yReturn
+  ,r.3yReturn
+  ,r.5yReturn
+  ,r.7yReturn
+  ,r.10yReturn
+  ,r.15yReturn
   from fund f
-  left join monthly_return_matrix r on f.fund_id = r.fund_id
-  left join fund_external fe on f.fund_id = fe.fund_id
+  left join monthly_returns r on f.fund_id = r.fund_id
+  left join fund_ext fe on f.fund_id = fe.fund_id
   where f.fund_id in
   (fund numbers
   )
@@ -46,19 +46,19 @@ con<- odbcConnect("db")
 
 FundStack  <- stringr::str_c(
   'select
-  f.short_name
+  f.fundName
   ,fe.wsj_symbol as abbreviation
   ,r.profile_date as PROFILE_DATE
   ,r.return_code
-  ,r.ror_1m_c_noload
-  ,r.ror_1y_c_noload
-  ,r.ror_3y_a_noload
-  ,r.ror_5y_a_noload
-  ,r.ror_7y_a_noload
-  ,r.ror_10y_a_noload
+  ,r.1mReturn
+  ,r.1yReturn
+  ,r.3yReturn
+  ,r.5yReturn
+  ,r.7yReturn
+  ,r.10yReturn
   from fund f
-  left join monthly_return_matrix r on f.fund_id = r.fund_id
-  left join fund_external fe on f.fund_id = fe.fund_id
+  left join monthly_returns r on f.fund_id = r.fund_id
+  left join fund_ext fe on f.fund_id = fe.fund_id
   where f.fund_id = fund number
   and return_code in (0, 8, 24)
   ') %>%
@@ -81,11 +81,11 @@ FundQuery <- FundStack %>%
   data.table::data.table(.)
 
 # 
-returns <- FundstationQuery %>%
+returns <- FundQuery %>%
   .[ , lapply(.SD, function(x) gsub("NULL", NA, x))] %>%
   .[complete.cases(short_name)] %>%
   setnames(names(.), tolower(names(.))) %>%
-  .[ , time_period := gsub("ror_|_noload", "", time_period)] %>%
+  .[ , time_period := gsub("cleaning up text", "", time_period)] %>%
   .[complete.cases(return)] %>%
   .[ , return := as.numeric(return)] %>%
   mutate(return_type = ifelse(return_code == "0", "TR", ifelse(return_code == "8", "Pre-Liq", "Post_Liq"))) %>%
@@ -94,7 +94,7 @@ returns <- FundstationQuery %>%
   data.table::data.table(.) %>%
   unique()
 
-monthly_returns <- returns[time_period == "1m_c" & return_code == 0]
+monthly_returns <- returns[time_period == "1m" & return_code == 0]
 
 make_blend <- function (DT, ids, weights, blend_name = "Blendy McBlenderson", 
                         id_col = "Ticker", return_col = "Return", date_col = "Date", 
@@ -188,7 +188,7 @@ flexible_sub <- function(flex_fund, eq_sub, fi_sub, eq_weighting = .6, fi_weight
       .[ , c("date", paste0(flex_fund, "_EQ")), with = F] %>% 
       .[ , date := as.Date(date, "%m/%d/%Y")] %>% 
       merge(., 
-            dcast(returns[time_period == "1m_c" 
+            dcast(returns[time_period == "1m" 
                           & abbreviation %in% c(flex_fund, eq_sub, fi_sub)
                           & return_type == "TR"], 
                   date ~ abbreviation, value.var = "return"), by = "date") %>% 
@@ -218,7 +218,7 @@ flexible_sub <- function(flex_fund, eq_sub, fi_sub, eq_weighting = .6, fi_weight
   
 }
 
-
+#Applies a rollings feature to returns. Since returns are monthly, it is necessary to calculate rolling annual returns with different periodictities.
 apply_rolling <- function (DT, func, value, window, group = "", ..., colname = NULL) 
 {
   values <- expand.grid(func = func, value = value, window = window)
