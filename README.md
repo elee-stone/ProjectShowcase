@@ -9,7 +9,11 @@ Create an application that can be accessed via a user’s browser that creates a
 <br />
 Helper.R: <br />
 Use odbcConnect to initiate connection to internal database. The stringr package is a set of wrappers to help embed SQL within the R syntax. The objective is to extract various returns and key identifiers to drive downstream analytics. <br />
-Data cleaning and manipulation techniques are used with a combination of arguments from the data.table and dplr libraries, while the pipe (%>%) used is from the magrittr package. A helpful way to read the pipe operator is to read it as “and then”. So, for example, <br />
+Data cleaning and manipulation techniques are used with a combination of arguments from the data.table and dplr libraries, while the pipe 
+```
+(%>%) 
+```
+used is from the magrittr package. A helpful way to read the pipe operator is to read it as “and then”. So, for example, <br />
 ```
 mutate(return_code = as.character(return_code)) %>% bind_rows(FundQuery) 
 ```
