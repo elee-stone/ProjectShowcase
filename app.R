@@ -27,10 +27,6 @@ library(gridExtra)
 library(officer)
 library(DT)
 
-
-options(repos = structure(c("https://mran.microsoft.com/snapshot/2017-09-01", "http://www.stats.ox.ac.uk/pub/RWin",
-                            "file:///users/shared/ra/cag-cran/"), .Names = c("CRAN", "CRANextra",
-                                                                             "CAG")))
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   
